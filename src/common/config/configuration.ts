@@ -17,4 +17,5 @@ export default (): Config => ({
       maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   },
+  [RootConfigKeys.JWT_SECRET]: 'secret',
 });

@@ -1,6 +1,7 @@
 export enum RootConfigKeys {
   USER_PASSWORD = 'userPassword',
   AUTH_CONFIG = 'authConfig',
+  JWT_SECRET = 'jwtSecret',
 }
 export type UserPassword = {
   saltLength: number;
@@ -23,4 +24,5 @@ export type AuthConfig = {
 export interface Config {
   [RootConfigKeys.USER_PASSWORD]: UserPassword;
   [RootConfigKeys.AUTH_CONFIG]: AuthConfig;
+  [RootConfigKeys.JWT_SECRET]: string;
 }

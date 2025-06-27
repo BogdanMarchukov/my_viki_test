@@ -43,6 +43,7 @@ export class AuthService {
     if (!auth) {
       throw new InternalServerErrorException();
     }
+
     const checkPassword = await this.secretService.passwordCheck(
       data.password,
       auth.publicKey,

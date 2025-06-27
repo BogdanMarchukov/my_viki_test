@@ -27,15 +27,16 @@ model User {
 }
 
 model Article {
-  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  authorId  String    @map("author_id") @db.Uuid
-  title     String
-  tags      String[]
-  content   String
-  version   Int
-  updatedBy String    @map("updated_by") @db.Uuid
-  createdAt DateTime  @default(now()) @map("created_at")
-  deletedAt DateTime? @map("deleted_at")
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  authorId    String    @map("author_id") @db.Uuid
+  title       String
+  tags        String[]
+  content     String
+  isPublished Boolean   @default(false)
+  version     Int
+  updatedBy   String    @map("updated_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  deletedAt   DateTime? @map("deleted_at")
 
   Author User @relation("author_article_relation", fields: [authorId], references: [id])
   Editor User @relation("editor_article_relation", fields: [updatedBy], references: [id])
@@ -45,14 +46,15 @@ model Article {
 }
 
 model ArticleVersion {
-  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  articleId String   @map("article_id")
-  title     String
-  tags      String[]
-  content   String
-  version   Int
-  createdBy String   @map("created_by") @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at")
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  articleId   String   @map("article_id")
+  title       String
+  tags        String[]
+  content     String
+  isPublished Boolean  @default(false)
+  version     Int
+  createdBy   String   @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
 
   User User @relation(fields: [createdBy], references: [id])
 

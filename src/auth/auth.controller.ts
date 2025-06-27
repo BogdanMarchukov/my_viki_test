@@ -37,6 +37,7 @@ export class AuthController {
     )!;
     response.cookie('refreshToken', refreshToken, {
       maxAge: config.refresh.maxAge,
+      httpOnly: true,
     });
     return { accessToken, userId };
   }

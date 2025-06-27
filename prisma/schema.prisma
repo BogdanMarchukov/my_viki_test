@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email          String           @unique
+  createdAt      DateTime         @default(now()) @map("created_at")
+  deletedAt      DateTime?        @map("deleted_at")
+  Article        Article[]        @relation("author_article_relation")
+  EditArticle    Article[]        @relation("editor_article_relation")
+  ArticleVersion ArticleVersion[]
+
+  @@map("users")
+}
+
+model Article {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  authorId  String    @map("author_id") @db.Uuid
+  title     String
+  tags      String[]
+  content   String
+  version   Int
+  updatedBy String    @map("updated_by") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  Author User @relation("author_article_relation", fields: [authorId], references: [id])
+  Editor User @relation("editor_article_relation", fields: [updatedBy], references: [id])
+
+  @@unique([version, id])
+  @@map("articles")
+}
+
+model ArticleVersion {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  articleId String   @map("article_id")
+  title     String
+  tags      String[]
+  content   String
+  version   Int
+  createdBy String   @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  User User @relation(fields: [createdBy], references: [id])
+
+  @@map("article_versions")
+}

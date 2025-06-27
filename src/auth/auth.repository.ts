@@ -24,6 +24,7 @@ export class AuthRepository {
     const user = await this.prismaService.user.findUnique({
       where: {
         email,
+        deletedAt: null,
       },
       include: {
         UserAuth: true,

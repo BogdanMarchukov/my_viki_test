@@ -5,9 +5,19 @@ import { UserModule } from './user/user.module';
 import { ArticleModule } from './article/article.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import configuration from './common/config/configuration';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UserModule, ArticleModule, PrismaModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
+    UserModule,
+    ArticleModule,
+    PrismaModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

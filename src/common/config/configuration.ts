@@ -8,4 +8,13 @@ export default (): Config => ({
     iterations: 2,
     digest: 'sha512',
   },
+  [RootConfigKeys.AUTH_CONFIG]: {
+    access: {
+      expiresIn: '1h',
+    },
+    refresh: {
+      expiresIn: '7d',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
+  },
 });

@@ -8,7 +8,7 @@ export class AuthRepository {
   constructor(
     private prismaService: PrismaService,
     private secretService: SecretService,
-  ) {}
+  ) { }
 
   async saveUserPassword(
     userId: string,
@@ -18,6 +18,18 @@ export class AuthRepository {
     const salt = this.secretService.generateSalt();
     const hash = await this.secretService.passwordToHash(password, salt);
     return this.setUserAuth(userId, salt, hash, prismaTransaction);
+  }
+
+  async findUserAndAuthByEmail(email: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        UserAuth: true,
+      },
+    });
+    return user;
   }
 
   private async setUserAuth(

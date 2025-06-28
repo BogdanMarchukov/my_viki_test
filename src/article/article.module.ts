@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
-import { ArticleService } from './services/article.service';
-import { ArticleVersionService } from './services/article-version.service';
+import { AuthModule } from 'src/auth/auth.module';
 import { ArticleController } from './article.controller';
+import { ArticleRepository } from './article.repository';
+import { ArticleVersionService } from './services/article-version.service';
+import { ArticleService } from './services/article.service';
 
 @Module({
-  providers: [ArticleService, ArticleVersionService],
-  controllers: [ArticleController]
+  imports: [AuthModule],
+  providers: [ArticleService, ArticleVersionService, ArticleRepository],
+  controllers: [ArticleController],
 })
-export class ArticleModule {}
+export class ArticleModule { }

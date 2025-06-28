@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SecretService } from './services/secret.service';
@@ -33,7 +33,29 @@ export class AuthRepository {
     return user;
   }
 
-  async findUserByTokenData(tokenData: TokenPayload) { }
+  async findUserByTokenData(tokenData: unknown) {
+    if (
+      !tokenData ||
+      typeof tokenData !== 'object' ||
+      !('userId' in tokenData) ||
+      !('tokenType' in tokenData) ||
+      tokenData.tokenType !== 'access'
+    ) {
+      throw new UnauthorizedException();
+    }
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: tokenData.userId as string,
+      },
+      include: {
+        UserAuth: true,
+      },
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
 
   private async setUserAuth(
     userId: string,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SecretService } from './services/secret.service';
+import { TokenPayload } from './types';
 
 @Injectable()
 export class AuthRepository {
@@ -24,7 +25,6 @@ export class AuthRepository {
     const user = await this.prismaService.user.findUnique({
       where: {
         email,
-        deletedAt: null,
       },
       include: {
         UserAuth: true,
@@ -32,6 +32,8 @@ export class AuthRepository {
     });
     return user;
   }
+
+  async findUserByTokenData(tokenData: TokenPayload) { }
 
   private async setUserAuth(
     userId: string,

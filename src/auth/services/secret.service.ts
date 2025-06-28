@@ -8,13 +8,14 @@ import {
   UserPassword,
 } from 'src/common/config/type';
 import { promisify } from 'util';
+import { TokenPayload } from '../types';
 
 @Injectable()
 export class SecretService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
   private static pbkdf2 = promisify(pbkdf2);
 
   async passwordToHash(password: string, salt: string): Promise<string> {
@@ -53,7 +54,7 @@ export class SecretService {
     )!;
     const expiresIn =
       tokenType === 'access' ? access.expiresIn : refresh.expiresIn;
-    const payload = {
+    const payload: TokenPayload = {
       userId,
       tokenType,
     };

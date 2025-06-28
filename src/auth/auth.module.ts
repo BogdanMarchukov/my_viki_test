@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { RootConfigKeys } from 'src/common/config/type';
+import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './services/auth.service';
 import { SecretService } from './services/secret.service';
-import { UserModule } from 'src/user/user.module';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { RootConfigKeys } from 'src/common/config/type';
+import { JwtStrategy } from './strateges/jwt.stratedy';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { RootConfigKeys } from 'src/common/config/type';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository, SecretService],
+  providers: [AuthService, AuthRepository, SecretService, JwtStrategy],
 })
-export class AuthModule { }
+export class AuthModule {}

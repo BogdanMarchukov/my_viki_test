@@ -1,6 +1,6 @@
 import { Article, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class ArticleRepository {
@@ -29,6 +29,31 @@ export class ArticleRepository {
     prismaTransaction = this.prismaService,
   ) {
     return prismaTransaction.article.findFirst({ where });
+  }
+
+  async selectForUpdate(id: string, prismaTransaction: PrismaService) {
+    const record = await prismaTransaction.$queryRaw<Article[]>`
+          SELECT * FROM "articles"
+          WHERE id = ${id}::uuid
+          FOR UPDATE
+        `;
+    if (!record.length) {
+      throw new NotFoundException('article not found');
+    }
+    return record[0];
+  }
+
+  async update(
+    id: string,
+    data: Prisma.ArticleUncheckedUpdateInput,
+    prismaTransaction = this.prismaService,
+  ) {
+    const article = await prismaTransaction.article.update({
+      where: { id },
+      data,
+    });
+    await this.createNewVersion(article, prismaTransaction);
+    return article;
   }
 
   private createNewVersion(

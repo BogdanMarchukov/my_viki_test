@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateArticleDto } from '../dto/crete-article.dto';
 import { TokenPayload } from 'src/auth/types';
 import { AuthRepository } from 'src/auth/auth.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ArticleRepository } from '../article.repository';
-import { Prisma } from '@prisma/client';
+import { Article, Prisma } from '@prisma/client';
 import { ArticleResponse } from '../dto/article.response.dto';
+import { UpdateArticleDto } from '../dto/update-article.dto';
 
 @Injectable()
 export class ArticleService {
@@ -69,6 +75,50 @@ export class ArticleService {
 
     if (!result) {
       throw new NotFoundException('Article not found');
+    }
+    return result;
+  }
+
+  async update(id: string, data: UpdateArticleDto, tokenData?: unknown) {
+    const author = await this.authRepository.findUserByTokenData(tokenData);
+    const article = await this.prismaService.$transaction(
+      async (tx: PrismaService) => {
+        const currentArticle = await this.articleRepository.selectForUpdate(
+          id,
+          tx,
+        );
+        const isLastVersion = this.isLastVersion(currentArticle, data.version);
+        if (isLastVersion) {
+          const updateArticleData: Prisma.ArticleUncheckedUpdateInput = {
+            title: data.title,
+            content: data.content,
+            tags: data.tags,
+            updatedBy: author.id,
+            version: currentArticle.version + 1,
+          };
+          const article = await this.articleRepository.update(
+            id,
+            updateArticleData,
+            tx,
+          );
+          return article;
+        } else {
+          throw new ConflictException(
+            `Article is not last version: last version is ${currentArticle.version}`,
+          );
+        }
+      },
+    );
+
+    return article;
+  }
+
+  private isLastVersion(currentArticle: Article, inputVersion: number) {
+    const result = currentArticle.version === inputVersion;
+    if (!result && inputVersion > currentArticle.version) {
+      throw new ConflictException(
+        `Invalid version, current version is ${currentArticle.version}`,
+      );
     }
     return result;
   }

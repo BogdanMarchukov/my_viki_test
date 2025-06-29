@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -22,6 +23,7 @@ import { OptionalParseBoolPipe } from 'src/common/validate/optional-boole.pipe';
 import { ArticleResponse } from './dto/article.response.dto';
 import { CreateArticleDto } from './dto/crete-article.dto';
 import { ArticleService } from './services/article.service';
+import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Controller('articles')
 export class ArticleController {
@@ -83,21 +85,28 @@ export class ArticleController {
   getOne(@Param('id', ParseUUIDPipe) id: string): Promise<ArticleResponse> {
     return this.articleService.findById(id);
   }
-  //
-  // @UseGuards(JwtAuthGuard)
-  // @Post()
-  // async create(@Body() dto: CreateArticleDto) {
-  //   return this.articleService.create(dto);
-  // }
-  //
-  // @UseGuards(JwtAuthGuard)
-  // @Patch(':id')
-  // async update(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Body() dto: UpdateArticleDto,
-  // ) {
-  //   return this.articleService.update(id, dto);
-  // }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiCreatedResponse({
+    description: 'update one article',
+    type: ArticleResponse,
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    format: 'uuid',
+    description: 'ID of the article',
+  })
+  @Patch(':id')
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateArticleDto,
+    @Req() req: Request,
+  ) {
+    return this.articleService.update(id, dto, req.user);
+  }
+
   //
   // @UseGuards(JwtAuthGuard)
   // @Delete(':id')

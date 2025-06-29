@@ -113,7 +113,7 @@ export class ArticleController {
   @ApiBearerAuth('access-token')
   @ApiCreatedResponse({
     description: 'delete one article',
-    type: ArticleResponse,
+    type: ArticleDeleteResponseDto,
   })
   @ApiParam({
     name: 'id',

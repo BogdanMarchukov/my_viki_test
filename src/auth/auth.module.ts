@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { RootConfigKeys } from 'src/common/config/type';
@@ -11,7 +11,7 @@ import { JwtStrategy } from './strateges/jwt.stratedy';
 
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {
         const secret = configService.get<string>(RootConfigKeys.JWT_SECRET)!;

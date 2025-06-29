@@ -11,6 +11,6 @@ export class UserResponse implements User {
   @ApiProperty()
   createdAt: Date;
 
-  @ApiProperty({ required: false })
-  deletedAt: Date;
+  @ApiProperty({ required: false, type: Date })
+  deletedAt: Date | null;
 }

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -37,7 +38,7 @@ export class AuthService {
     const user = await this.authRepository.findUserAndAuthByEmail(data.email);
     const auth = user?.UserAuth;
     if (!user) {
-      throw new BadRequestException('invalid password or email');
+      throw new UnauthorizedException('invalid password or email');
     }
     if (!auth) {
       throw new InternalServerErrorException();
@@ -50,7 +51,7 @@ export class AuthService {
     );
 
     if (!checkPassword) {
-      throw new BadRequestException('invalid password or email');
+      throw new UnauthorizedException('invalid password or email');
     }
     const accessToken = this.secretService.generateJwt(user.id, 'access');
     const refreshToken = this.secretService.generateJwt(user.id, 'refresh');

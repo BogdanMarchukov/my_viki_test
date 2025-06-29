@@ -10,6 +10,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async onModuleInit() {
+    const prisma = this;
     Object.assign(
       this,
       this.$extends({
@@ -32,13 +33,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
               return query(args);
             },
-
-            // async delete({ args }) {
-            //   return prisma.user.update({
-            //     where: args.where,
-            //     data: { deletedAt: new Date() },
-            //   });
-            // },
+            delete({ args }) {
+              return prisma.user.update({
+                where: args.where,
+                data: { deletedAt: new Date() },
+              });
+            },
           },
           article: {
             async findMany({ args, query }) {
@@ -59,12 +59,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
               return query(args);
             },
 
-            // async delete({ args }) {
-            //   return prisma.article.update({
-            //     where: args.where,
-            //     data: { deletedAt: new Date() },
-            //   });
-            // },
+            delete() {
+              throw new Error('not implemented');
+            },
           },
         },
       }),

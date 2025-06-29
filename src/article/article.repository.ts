@@ -24,6 +24,13 @@ export class ArticleRepository {
     return prismaTransaction.article.findMany({ where });
   }
 
+  async delete(id: string, prismaTransaction = this.prismaService) {
+    return prismaTransaction.article.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
   async findById(
     where: Prisma.ArticleWhereUniqueInput,
     prismaTransaction = this.prismaService,
@@ -34,7 +41,7 @@ export class ArticleRepository {
   async selectForUpdate(id: string, prismaTransaction: PrismaService) {
     const record = await prismaTransaction.$queryRaw<Article[]>`
           SELECT * FROM "articles"
-          WHERE id = ${id}::uuid
+          WHERE id = ${id}::uuid and deleted_at is null
           FOR UPDATE
         `;
     if (!record.length) {

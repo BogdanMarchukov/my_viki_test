@@ -79,6 +79,15 @@ export class ArticleService {
     return result;
   }
 
+  async delete(id: string, tokenData: unknown) {
+    await this.authRepository.findUserByTokenData(tokenData);
+    await this.prismaService.$transaction(async (tx: PrismaService) => {
+      const article = await this.articleRepository.selectForUpdate(id, tx);
+      await this.articleRepository.delete(article.id, tx);
+    });
+    return { message: 'article deleted' };
+  }
+
   async update(id: string, data: UpdateArticleDto, tokenData?: unknown) {
     const author = await this.authRepository.findUserByTokenData(tokenData);
     const article = await this.prismaService.$transaction(

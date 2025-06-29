@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -24,6 +25,7 @@ import { ArticleResponse } from './dto/article.response.dto';
 import { CreateArticleDto } from './dto/crete-article.dto';
 import { ArticleService } from './services/article.service';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { ArticleDeleteResponseDto } from './dto/article-delete.response.dto';
 
 @Controller('articles')
 export class ArticleController {
@@ -107,10 +109,23 @@ export class ArticleController {
     return this.articleService.update(id, dto, req.user);
   }
 
-  //
-  // @UseGuards(JwtAuthGuard)
-  // @Delete(':id')
-  // async delete(@Param('id', ParseIntPipe) id: number) {
-  //   return this.articleService.delete(id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiCreatedResponse({
+    description: 'delete one article',
+    type: ArticleResponse,
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    format: 'uuid',
+    description: 'ID of the article',
+  })
+  @Delete(':id')
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
+  ): Promise<ArticleDeleteResponseDto> {
+    return this.articleService.delete(id, req.user);
+  }
 }

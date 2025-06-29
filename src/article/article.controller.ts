@@ -84,8 +84,11 @@ export class ArticleController {
     description: 'ID of the article',
   })
   @Get(':id')
-  getOne(@Param('id', ParseUUIDPipe) id: string): Promise<ArticleResponse> {
-    return this.articleService.findById(id);
+  getOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
+  ): Promise<ArticleResponse> {
+    return this.articleService.findById(id, req.user);
   }
 
   @UseGuards(JwtAuthGuard)

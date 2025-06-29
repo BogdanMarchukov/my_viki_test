@@ -65,7 +65,7 @@ export class ArticleService {
     return articles;
   }
 
-  async findById(id: string, tokenData?: TokenPayload) {
+  async findById(id: string, tokenData?: unknown) {
     const isPublished = await this.isPublishMake(tokenData, true);
 
     const result = await this.articleRepository.findById({
@@ -141,7 +141,7 @@ export class ArticleService {
       return isPublish;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
-      return false;
+      return true;
     }
   }
 }

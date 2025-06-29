@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArticleDto } from '../dto/crete-article.dto';
 import { TokenPayload } from 'src/auth/types';
 import { AuthRepository } from 'src/auth/auth.repository';
@@ -38,5 +38,51 @@ export class ArticleService {
       },
     );
     return article;
+  }
+
+  async findMany(
+    filter: { tags?: string[] | string; isPublish?: boolean },
+    tokenData?: unknown,
+  ) {
+    const isPublish = await this.isPublishMake(tokenData, filter.isPublish);
+    let tags = filter.tags;
+    if (typeof tags === 'string') {
+      tags = [tags];
+    }
+    const where: Prisma.ArticleWhereInput = {
+      isPublished: isPublish,
+    };
+    if (tags) {
+      where.tags = { hasSome: tags };
+    }
+    const articles = await this.articleRepository.findMany(where);
+    return articles;
+  }
+
+  async findById(id: string, tokenData?: TokenPayload) {
+    const isPublished = await this.isPublishMake(tokenData, true);
+
+    const result = await this.articleRepository.findById({
+      id,
+      isPublished,
+    });
+
+    if (!result) {
+      throw new NotFoundException('Article not found');
+    }
+    return result;
+  }
+
+  private async isPublishMake(
+    tokenData: unknown,
+    isPublish?: boolean,
+  ): Promise<boolean | undefined> {
+    try {
+      await this.authRepository.findUserByTokenData(tokenData);
+      return isPublish;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      return false;
+    }
   }
 }

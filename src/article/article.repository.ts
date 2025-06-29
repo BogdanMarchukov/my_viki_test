@@ -1,6 +1,8 @@
 import { Article, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class ArticleRepository {
   constructor(private prismaService: PrismaService) { }
 
@@ -9,9 +11,24 @@ export class ArticleRepository {
     prismaTransaction = this.prismaService,
   ) {
     data = { ...data, version: 1 };
+
     const article = await prismaTransaction.article.create({ data });
     await this.createNewVersion(article, prismaTransaction);
     return article;
+  }
+
+  async findMany(
+    where: Prisma.ArticleWhereInput,
+    prismaTransaction = this.prismaService,
+  ) {
+    return prismaTransaction.article.findMany({ where });
+  }
+
+  async findById(
+    where: Prisma.ArticleWhereUniqueInput,
+    prismaTransaction = this.prismaService,
+  ) {
+    return prismaTransaction.article.findFirst({ where });
   }
 
   private createNewVersion(

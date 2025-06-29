@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SecretService } from './services/secret.service';
-import { TokenPayload } from './types';
 
 @Injectable()
 export class AuthRepository {
@@ -43,6 +42,7 @@ export class AuthRepository {
     ) {
       throw new UnauthorizedException();
     }
+
     const user = await this.prismaService.user.findUnique({
       where: {
         id: tokenData.userId as string,

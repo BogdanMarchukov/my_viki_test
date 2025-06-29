@@ -5,7 +5,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     super({
-      log: ['query', 'error'],
+      log: ['query'],
     });
   }
 

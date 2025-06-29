@@ -1,16 +1,14 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateArticleDto } from '../dto/crete-article.dto';
-import { TokenPayload } from 'src/auth/types';
+import { Article, Prisma } from '@prisma/client';
 import { AuthRepository } from 'src/auth/auth.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ArticleRepository } from '../article.repository';
-import { Article, Prisma } from '@prisma/client';
 import { ArticleResponse } from '../dto/article.response.dto';
+import { CreateArticleDto } from '../dto/crete-article.dto';
 import { UpdateArticleDto } from '../dto/update-article.dto';
 
 @Injectable()
@@ -19,7 +17,7 @@ export class ArticleService {
     private authRepository: AuthRepository,
     private prismaService: PrismaService,
     private articleRepository: ArticleRepository,
-  ) { }
+  ) {}
 
   async createArticle(
     data: CreateArticleDto,
@@ -35,6 +33,7 @@ export class ArticleService {
           authorId: author.id,
           version: 0,
           updatedBy: author.id,
+          isPublished: data.isPublish,
         };
         const article = await this.articleRepository.create(
           createArticleData,
@@ -66,7 +65,7 @@ export class ArticleService {
   }
 
   async findById(id: string, tokenData?: unknown) {
-    const isPublished = await this.isPublishMake(tokenData, true);
+    const isPublished = await this.isPublishMake(tokenData);
 
     const result = await this.articleRepository.findById({
       id,

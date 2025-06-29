@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -18,7 +17,7 @@ export class AuthService {
     private userRepository: UserRepository,
     private prismaService: PrismaService,
     private secretService: SecretService,
-  ) { }
+  ) {}
 
   async userSignUp(data: AuthDto): Promise<User> {
     const user = await this.prismaService.$transaction(
@@ -56,5 +55,9 @@ export class AuthService {
     const accessToken = this.secretService.generateJwt(user.id, 'access');
     const refreshToken = this.secretService.generateJwt(user.id, 'refresh');
     return { accessToken, refreshToken, userId: user.id };
+  }
+
+  generateAccessToken_OnlyTest(userId: string) {
+    return this.secretService.generateJwt(userId, 'access');
   }
 }

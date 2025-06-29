@@ -33,11 +33,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
               return query(args);
             },
-            delete({ args }) {
-              return prisma.user.update({
-                where: args.where,
-                data: { deletedAt: new Date() },
-              });
+            delete() {
+              throw new Error('not implemented');
             },
           },
           article: {

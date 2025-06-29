@@ -9,7 +9,7 @@
 
 ## Description
 Тестовое задание "Another Knowelege Base"
-Для запуска приложения конфоги не требуются они захардкожены в src/common/config/configuration  
+Для запуска приложения конфиги не требуются они захардкожены в src/common/config/configuration.ts  
 
 ### Создал два docker-compose файла
  -  docker-compose.db.yaml для запуска базы данных

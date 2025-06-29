@@ -10,7 +10,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async onModuleInit() {
-    const prisma = this;
     Object.assign(
       this,
       this.$extends({
